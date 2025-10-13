@@ -1,0 +1,9 @@
+google-adk
+pydantic[email]
+rich
+google-genai
+fastapi
+jinja2
+python-multipart
+uvicorn
+python-dotenv

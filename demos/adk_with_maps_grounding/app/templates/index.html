@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maps Agent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">Maps Agent</h1>
+        
+        <!-- Tab Navigation -->
+        <div class="mb-6">
+            <nav class="flex space-x-8" aria-label="Tabs">
+                <a href="/" class="{% if active_tab == 'ask' %}border-blue-500 text-blue-600{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm">
+                    Ask Questions
+                </a>
+                <a href="/blurb-generator" class="{% if active_tab == 'blurb' %}border-blue-500 text-blue-600{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm">
+                    Blurb Generator
+                </a>
+            </nav>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6">
+            {% if active_tab == 'ask' %}
+            <!-- Ask Questions Tab -->
+            <form method="post" action="/ask" class="mb-6" onsubmit="showSpinner('askButton', 'askButtonText', 'askSpinner')">
+                <div class="mb-4">
+                    <label for="question" class="block text-sm font-medium text-gray-700 mb-2">
+                        Ask about a location:
+                    </label>
+                    <input 
+                        type="text" 
+                        id="question" 
+                        name="question" 
+                        value="{{ question or '' }}"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="e.g., Write a blurb about the neighborhood of 296 Manhattan Ave, brooklyn"
+                        required
+                    >
+                </div>
+                
+                <div class="flex gap-2">
+                    <button 
+                        type="submit"
+                        id="askButton"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <span id="askButtonText">Ask</span>
+                        <svg id="askSpinner" class="hidden animate-spin ml-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </button>
+                    
+                    <button 
+                        type="button"
+                        onclick="clearForm()"
+                        class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    >
+                        Reset
+                    </button>
+                </div>
+            </form>
+            {% else %}
+            <!-- Blurb Generator Tab -->
+            <form method="post" action="/generate-blurb" class="mb-6" onsubmit="showSpinner('generateButton', 'generateButtonText', 'generateSpinner')">
+                <div class="mb-4">
+                    <label for="address" class="block text-sm font-medium text-gray-700 mb-2">
+                        Address:
+                    </label>
+                    <input 
+                        type="text" 
+                        id="address" 
+                        name="address" 
+                        value="{{ address or '' }}"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="e.g., 296 Manhattan Ave, Brooklyn, NY"
+                        autocomplete="off"
+                        required
+                    >
+                </div>
+                
+                <div class="mb-4">
+                    <label for="persona" class="block text-sm font-medium text-gray-700 mb-2">
+                        Target Persona:
+                    </label>
+                    <input 
+                        type="text" 
+                        id="persona" 
+                        name="persona" 
+                        value="{{ persona or '' }}"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="e.g., families with toddlers, Gen Z tech professionals, young professionals"
+                        required
+                    >
+                </div>
+                
+                <div class="mb-4">
+                    <label for="other_notes" class="block text-sm font-medium text-gray-700 mb-2">
+                        Other Notes (optional):
+                    </label>
+                    <textarea 
+                        id="other_notes" 
+                        name="other_notes" 
+                        rows="3"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="e.g., emphasize walkability, mention nearby schools, focus on nightlife"
+                    >{{ other_notes or '' }}</textarea>
+                </div>
+                
+                <div class="flex gap-2">
+                    <button 
+                        type="submit"
+                        id="generateButton"
+                        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <span id="generateButtonText">Generate Blurb</span>
+                        <svg id="generateSpinner" class="hidden animate-spin ml-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </button>
+                    
+                    <button 
+                        type="button"
+                        onclick="clearBlurbForm()"
+                        class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    >
+                        Reset
+                    </button>
+                </div>
+            </form>
+            {% endif %}
+            
+            {% if response %}
+            <div class="mt-6 p-4 bg-green-50 border border-green-200 rounded-md">
+                <h3 class="text-lg font-semibold text-green-800 mb-2">Response:</h3>
+                <div class="text-green-700 whitespace-pre-wrap">{{ response|safe }}</div>
+                
+                {% if grounding_links %}
+                <div class="mt-4 pt-4 border-t border-green-300">
+                    <h4 class="text-md font-semibold text-green-800 mb-2">Related Places:</h4>
+                    <div class="space-y-2">
+                        {% for link in grounding_links %}
+                        <a 
+                            href="{{ link.uri }}" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            class="inline-flex items-center px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-full text-sm transition-colors duration-200"
+                        >
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                            </svg>
+                            {{ link.title }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if widget_context_token %}
+                <div class="mt-4 pt-4 border-t border-green-300">
+                    <h4 class="text-md font-semibold text-green-800 mb-2">Interactive Map:</h4>
+                    <div id="maps-widget-container" class="w-full bg-gray-50 rounded-lg p-4 min-h-[300px]">
+                        <p class="text-gray-600">Loading map widget...</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            {% if error %}
+            <div class="mt-6 p-4 bg-red-50 border border-red-200 rounded-md">
+                <h3 class="text-lg font-semibold text-red-800 mb-2">Error:</h3>
+                <div class="text-red-700">{{ error }}</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <script>
+        function showSpinner(buttonId, textId, spinnerId) {
+            const button = document.getElementById(buttonId);
+            const buttonText = document.getElementById(textId);
+            const spinner = document.getElementById(spinnerId);
+            
+            button.disabled = true;
+            buttonText.textContent = 'Processing...';
+            spinner.classList.remove('hidden');
+        }
+        
+        function clearForm() {
+            document.getElementById('question').value = '';
+            window.location.href = '/';
+        }
+        
+        function clearBlurbForm() {
+            document.getElementById('address').value = '';
+            document.getElementById('persona').value = '';
+            document.getElementById('other_notes').value = '';
+            window.location.href = '/blurb-generator';
+        }
+
+        // Initialize Google Places Autocomplete for address input
+        async function initAddressAutocomplete() {
+            try {
+                const addressInput = document.getElementById('address');
+                if (!addressInput) return; // Only initialize if on blurb generator tab
+                
+                // Load the places library
+                await google.maps.importLibrary("places");
+                
+                // Create autocomplete instance
+                const autocomplete = new google.maps.places.Autocomplete(addressInput, {
+                    types: ['address'],
+                    componentRestrictions: { country: 'us' } // Restrict to US addresses
+                });
+                
+                // Optional: Handle place selection
+                autocomplete.addListener('place_changed', () => {
+                    const place = autocomplete.getPlace();
+                    if (place.formatted_address) {
+                        addressInput.value = place.formatted_address;
+                    }
+                });
+                
+                console.log('Address autocomplete initialized');
+                
+            } catch (error) {
+                console.error('Error initializing address autocomplete:', error);
+            }
+        }
+
+        {% if widget_context_token %}
+        // Initialize Google Maps widget
+        async function initMapsWidget() {
+            try {
+                const widgetToken = `{{ widget_context_token }}`;
+                
+                // Load the places library
+                await google.maps.importLibrary("places");
+
+                // Create the grounding widget
+                const widget = new google.maps.places.PlaceContextualElement({
+                    contextToken: widgetToken
+                });
+
+                // Clear the container and append the widget
+                const container = document.getElementById("maps-widget-container");
+                container.innerHTML = '';
+                container.appendChild(widget);
+
+                console.log('Maps widget rendered successfully');
+
+            } catch (error) {
+                console.error('Error initializing maps widget:', error);
+                const container = document.getElementById("maps-widget-container");
+                container.innerHTML = `
+                    <div class="text-red-600 bg-red-50 p-3 rounded">
+                        <strong>Error loading map:</strong> ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Handle API load errors
+        window.gm_authFailure = function() {
+            const container = document.getElementById("maps-widget-container");
+            if (container) {
+                container.innerHTML = `
+                    <div class="text-red-600 bg-red-50 p-3 rounded">
+                        <strong>Google Maps API Authentication Failed</strong><br>
+                        Please check your API key configuration.
+                    </div>
+                `;
+            }
+        };
+        {% endif %}
+
+        // Initialize based on what's available on the page
+        function initGoogleMapsFeatures() {
+            {% if widget_context_token %}
+            initMapsWidget();
+            {% endif %}
+            
+            {% if active_tab == 'blurb' %}
+            initAddressAutocomplete();
+            {% endif %}
+        }
+    </script>
+
+    <!-- Load Google Maps API with alpha version and places library -->
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=YOUR_ACTUAL_API_KEY_HERE&libraries=places&v=alpha&callback=initGoogleMapsFeatures">
+    </script>
+</body>
+</html>

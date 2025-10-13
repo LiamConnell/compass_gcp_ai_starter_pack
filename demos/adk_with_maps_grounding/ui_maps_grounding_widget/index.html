@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maps Grounding Widget Hello World</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .widget-container {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .error {
+            color: red;
+            background: #ffe6e6;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Maps Grounding Widget Hello World</h1>
+    <p>This is a simple example of the Google Maps Grounding Widget.</p>
+    
+    <div class="widget-container">
+        <h2>Grounding Widget</h2>
+        <div id="widget-container">
+            <p>Loading widget...</p>
+        </div>
+    </div>
+
+    <script>
+        let map;
+
+        async function initMap() {
+            try {
+                // Load the token from the JSON file as text first
+                const response = await fetch('./widget_context_token.json');
+                const rawText = await response.text();
+                
+                // Clean control characters before parsing JSON
+                const cleanedText = rawText.replace(/[\x00-\x1F\x7F]/g, '');
+                const data = JSON.parse(cleanedText);
+                
+                // Further clean the token string
+                const cleanToken = data.widget_context_token.replace(/\s+/g, '');
+                
+                console.log('Token loaded and cleaned');
+
+                // Load the places library
+                await google.maps.importLibrary("places");
+
+                // Create the grounding widget
+                const widget = new google.maps.places.PlaceContextualElement({
+                    contextToken: cleanToken
+                });
+
+                // Clear the container and append the widget
+                const container = document.getElementById("widget-container");
+                container.innerHTML = '';
+                container.appendChild(widget);
+
+                console.log('Widget rendered successfully');
+
+            } catch (error) {
+                console.error('Error initializing widget:', error);
+                document.getElementById("widget-container").innerHTML = `
+                    <div class="error">
+                        <strong>Error:</strong> ${error.message}
+                        <br>
+                        <small>Check the console for more details.</small>
+                    </div>
+                `;
+            }
+        }
+
+        // Handle API load errors
+        window.gm_authFailure = function() {
+            document.getElementById("widget-container").innerHTML = `
+                <div class="error">
+                    <strong>Google Maps API Authentication Failed</strong>
+                    <br>
+                    Please check your API key and ensure it's enabled for the Maps JavaScript API.
+                </div>
+            `;
+        };
+    </script>
+
+    <!-- Load Google Maps API with alpha version and places library -->
+    <!-- Replace YOUR_ACTUAL_API_KEY_HERE with your Google Maps JavaScript API key -->
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=YOUR_ACTUAL_API_KEY_HERE&libraries=places&v=alpha&callback=initMap">
+    </script>
+
+    <div style="margin-top: 40px; padding: 20px; background: #f5f5f5; border-radius: 8px;">
+        <h3>Setup Instructions:</h3>
+        <ol>
+            <li>Replace <code>YOUR_API_KEY</code> in the script tag with your Google Maps API key</li>
+            <li>Ensure your API key is enabled for Google Maps JavaScript API</li>
+            <li>Make sure the <code>widget_context_token.json</code> file is in the same directory</li>
+            <li>Serve this file using a local web server (not file:// protocol)</li>
+        </ol>
+    </div>
+</body>
+</html>
