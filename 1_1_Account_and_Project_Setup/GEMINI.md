@@ -24,7 +24,7 @@ When providing commands, use the configuration variables defined above (e.g., us
 ### Authentication Method
 **IMPORTANT:** This project uses **Application Default Credentials (ADC)** via gcloud CLI. Never suggest using API keys or service account JSON files for local development.
 
-**Always authenticate using:**
+**Always authenticate using:** (you will probably have to ask the user to do this in a different terminal tab)
 ```bash
 gcloud auth application-default login
 ```
