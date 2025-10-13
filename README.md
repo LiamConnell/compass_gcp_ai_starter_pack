@@ -27,6 +27,13 @@ A fast-track guide to building and deploying AI applications on Google Cloud Pla
 
 7. **[Cloud Storage](./3_2_Cloud_Storage/README.md)** - Object storage for files, images, and data
 
+### Demos
+
+- **[demos/](./demos/)** - Full-featured demo applications
+  - ADK with Maps Grounding - Agent with Google Maps integration
+  - OpenAI Vertex Client - OpenAI-compatible client for Vertex AI
+  - Voice Assistant - CRM agent example
+
 ### Reference Materials
 
 - **[GCP-AWS Concept Comparison Map](./GCP_AWS_Concept_Comparison_Map.md)** - Service equivalents and translations for AWS developers
