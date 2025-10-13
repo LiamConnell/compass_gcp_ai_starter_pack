@@ -72,15 +72,6 @@ export GOOGLE_CLOUD_PROJECT=$(gcloud config get-value project)
 export GOOGLE_CLOUD_LOCATION="us-central1"
 ```
 
-## Project Structure
-
-This is a GCP AI Starter Pack with the following components:
-
-- **Gemini API** - Text generation, vision, function calling (using `google-genai` SDK)
-- **Google ADK** - Agent Development Kit for building AI agents
-- **Cloud Run** - Serverless container deployment
-- **Cloud Storage** - Object storage for files and data
-
 ## Common Tasks
 
 ### Deploying to Cloud Run
