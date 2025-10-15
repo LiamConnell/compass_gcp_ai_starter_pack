@@ -4,6 +4,9 @@ An AI coding assistant built with Google ADK featuring file system operations, t
 
 **This is a toy example! It is not meant to be a replacement for fully featured products like the Gemini CLI or Claude Code.**
 
+
+![alt text](image.png)
+
 ## Features
 
 
