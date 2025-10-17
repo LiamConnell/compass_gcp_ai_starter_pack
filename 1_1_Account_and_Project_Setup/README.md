@@ -124,16 +124,8 @@ You should see:
 
 The Gemini CLI gives you an AI assistant in your terminal that can help with GCP tasks, debugging, and infrastructure questions.
 
-### Install Gemini CLI
-
-```bash
-# Install via pip
-pip install google-gemini-cli
-
-# Or install from source
-git clone https://github.com/google-gemini/gemini-cli.git
-cd gemini-cli
-pip install -e .
+```
+brew install gemini-cli
 ```
 
 ### Configure for Vertex AI
